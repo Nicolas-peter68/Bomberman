@@ -7,6 +7,7 @@ let playerGauche = 0;
 
 
 function anime(e) {
+    console.log("test")
     if (e.keyCode == 39) {
         playerGauche +=2;
         player.style.left = playerGauche+'2px';
