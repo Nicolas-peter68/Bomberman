@@ -13,8 +13,8 @@ const ennemies = [];
 //tableau de directions
 const directions = ["top", "right", "bottom", "left"];
 let score = 0;
-let scream = new Audio ("../assets/audio/Wilhelm_Scream.ogg");
-let boom = new Audio("../assets/audio/Explosion.wav");
+let scream = new Audio ("assets/audio/Wilhelm_Scream.ogg");
+let boom = new Audio("assets/audio/Explosion.wav");
 
 //fonction pour générer des positions initiales aléatoires à nos ennemis
 function generateRandomPositions() {
@@ -74,6 +74,25 @@ createEnnemies();
 function getStyleValue(element, property) {
   return parseInt(window.getComputedStyle(element).getPropertyValue(property));
 }
+function detectDegats(player) {
+  let playerTop = getStyleValue(player, "top");
+  let playerLeft = getStyleValue(player, "left");
+  let ennemiLeft = getStyleValue(ennemies[i],"left");
+  let ennemiTop = getStyleValue(ennemies[i],"top")
+  for (let i = 0; i < nbEnnemies; i++) {
+    
+     if (
+    playerTop >= ennemiTop && 
+    playerTop <= ennemiTop &&
+    playerLeft >= ennemiLeft  &&
+    playerLeft <= ennemiLeft &&
+    !isTouched) {
+      console.log("touché")
+    lives--;
+  }
+  }
+ 
+}
 
 //fonction pour détecter si une explosion touche un élément de notre plateau de jeu
 function detecteExplosion(explosion) {
@@ -105,10 +124,10 @@ function detecteExplosion(explosion) {
       player.classList.remove("touched");
     }, 3000);
   if (lives===0) {
-    alert("Vous êtes mort");
+    gameBoard.removeChild(player);
+    alert("Vous êtes mort");  
   }
   }
-  
   //On parcours le tableau d'ennemis dans le sens inverse, cela est recommandé lorsque l'on désire retirer un élément d'un tableau au fur et à mesure qu'on le parcours
   
   for (let i = ennemies.length - 1; i >= 0; i--) {
@@ -140,17 +159,7 @@ function detecteExplosion(explosion) {
     }
   }
 }
-function detectDegats() {
-  if (
-    playerTop >= ennemiTop - 50 && 
-    playerTop <= ennemiTop +50 &&
-    playerLeft >= ennemiLeft -50 &&
-    playerLeft <= ennemiLeft+50 &&
-    !isTouched) {
-      //faire un foreach pour chercher un ennemis
-    lives--;
-  }
-}
+
 
 //fonction pour créer une explosion
 function createExplosion(bombTop, bombLeft) {
@@ -221,7 +230,7 @@ function move(element, direction) {
       }
       break;
 
-    default:
+    default :detectDegats(player);
       break;
   }
 }
