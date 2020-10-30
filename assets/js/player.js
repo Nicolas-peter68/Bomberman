@@ -6,6 +6,7 @@ class Player {
         this.width = 50;
         this.height = 50;
         this.weight = 1;
+        //this.bombe = 1;
     }
     update() {
         if (this.y > canvas.height - (this.height)) {
@@ -27,10 +28,34 @@ class Player {
         if (bas) this.bas();
         if (droite) this.droite();
         if (gauche) this.gauche();
+        if (bombe) this.bombe();
     }
+
     draw() {
         ctx.fillStyle = 'blue';
         ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+    /** 
+    test() {
+        ctx.fillStyle = 'red';
+        ctx.fillRect(45, 23, 56, 56);
+    }*/
+    bombe() {
+
+        /*
+        let parent = document.getElementById("map");
+        let bombe = document.createElement('div');
+        bombe.className = 'bombe'; 
+        bombe.style.top = this.x + "px";
+        bombe.style.left = this.y + "px";
+        parent.appendChild(bombe);
+
+        setTimeout(() => {
+            bombe.remove()
+        }, 100000);*/
+        ctx.fillStyle = 'red';
+        ctx.fillRect(this.x, this.y, 30, 30);
+        console.log("bombe()");
     }
     haut() {
         this.y -= 10;
@@ -44,5 +69,6 @@ class Player {
     gauche() {
         this.x -= 10;
     }
+
 }
 const joueur = new Player();

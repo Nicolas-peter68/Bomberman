@@ -6,6 +6,7 @@ let haut = false;
 let bas = false;
 let droite = false;
 let gauche = false;
+let bombe = false;
 
 let map =
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -30,9 +31,19 @@ function player() {
     //ctx.fillRect(50,50,30,30);
     joueur.update();
     joueur.draw();
+    //joueur.bombe();
+    //joueur.test();
     requestAnimationFrame(player);
 }
 player();
+
+/** 
+function bombe() {
+    let div = document.createElement('div');
+    div.className = 'bombe';
+    document.body.appendChild(div)
+}
+*/
 
 window.addEventListener('keydown', function (e) {
     if (e.code === 'ArrowDown') bas = true;
@@ -58,3 +69,6 @@ window.addEventListener('keydown', function (e) {
 window.addEventListener('keyup', function (e) {
     if (e.code === 'ArrowLeft') gauche = false;
 });
+window.addEventListener('keydown',function(e){
+    if (e.code ==='Space') joueur.bombe();
+})
