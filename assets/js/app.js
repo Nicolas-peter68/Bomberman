@@ -13,7 +13,7 @@ const ennemies = [];
 //tableau de directions
 const directions = ["top", "right", "bottom", "left"];
 let score = 0;
-let scream = new Audio ("assets/audio/Wilhelm_Scream.ogg");
+let scream = new Audio("assets/audio/Wilhelm_Scream.ogg");
 let boom = new Audio("assets/audio/Explosion.wav");
 
 //fonction pour générer des positions initiales aléatoires à nos ennemis
@@ -66,7 +66,23 @@ function createEnnemies() {
     gameBoard.appendChild(ennemies[i]);
   }
 }
-
+function playerTouched() {
+  let vies = document.getElementById('vies');
+  //on diminue son nombre de vie
+  lives--;
+  vies.innerHTML = "Vies restantes = " + lives
+  //on passe le fait que le joueur soit touché à vrai
+  isTouched = true;
+  player.classList.add("touched");
+  setTimeout(function () {
+    isTouched = false;
+    player.classList.remove("touched");
+  }, 3000);
+  if (lives <= 0) {
+    gameBoard.removeChild(player);
+    alert("Vous êtes mort");
+  }
+}
 //on appelle la fonction pour créer les ennemis au chargement de la page
 createEnnemies();
 
@@ -74,24 +90,19 @@ createEnnemies();
 function getStyleValue(element, property) {
   return parseInt(window.getComputedStyle(element).getPropertyValue(property));
 }
-function detectDegats(player) {
+function detectDegats() {
   let playerTop = getStyleValue(player, "top");
   let playerLeft = getStyleValue(player, "left");
-  let ennemiLeft = getStyleValue(ennemies[i],"left");
-  let ennemiTop = getStyleValue(ennemies[i],"top")
-  for (let i = 0; i < nbEnnemies; i++) {
-    
-     if (
-    playerTop >= ennemiTop && 
-    playerTop <= ennemiTop &&
-    playerLeft >= ennemiLeft  &&
-    playerLeft <= ennemiLeft &&
-    !isTouched) {
-      console.log("touché")
-    lives--;
+  if (!isTouched) {
+    for (let i = ennemies.length - 1; i >= 0; i--) {
+      let ennemiTop = getStyleValue(ennemies[i], "top");
+      let ennemiLeft = getStyleValue(ennemies[i], "left");
+      if (ennemiTop === playerTop && ennemiLeft === playerLeft) {
+        console.log('touché')
+        playerTouched() 
+      }
+    }
   }
-  }
- 
 }
 
 //fonction pour détecter si une explosion touche un élément de notre plateau de jeu
@@ -112,29 +123,16 @@ function detecteExplosion(explosion) {
     playerLeft <= explosionLeft + 50 &&
     !isTouched
   ) {
-    let vies = document.getElementById('vies');
-    //on diminue son nombre de vie
-    lives--;
-    vies.innerHTML = "Vies restantes = "+lives
-    //on passe le fait que le joueur soit touché à vrai
-    isTouched = true;
-    player.classList.add("touched");
-    setTimeout(function () {
-      isTouched = false;
-      player.classList.remove("touched");
-    }, 3000);
-  if (lives===0) {
-    gameBoard.removeChild(player);
-    alert("Vous êtes mort");  
+    playerTouched()
   }
-  }
+
   //On parcours le tableau d'ennemis dans le sens inverse, cela est recommandé lorsque l'on désire retirer un élément d'un tableau au fur et à mesure qu'on le parcours
-  
+
   for (let i = ennemies.length - 1; i >= 0; i--) {
     let points = document.getElementById("score");
     let ennemiTop = getStyleValue(ennemies[i], "top");
     let ennemiLeft = getStyleValue(ennemies[i], "left");
-    
+
     //console.log(`ennemi top = ${ennemiTop} left = ${ennemiLeft}`);
     //console.log(`bombe top = ${explosionTop} left = ${explosionLeft}`);
     //si notre ennemi est dans l'explosion
@@ -150,11 +148,9 @@ function detecteExplosion(explosion) {
       ennemies.splice(i, 1);
       scream.play();
       score++;
-      points.innerHTML = "SCORE = "+score;
-      console.log(score);
-      
-      if (score===10) {
-          alert("Vous avez gagné");
+      points.innerHTML = "SCORE = " + score;
+      if (score === 10) {
+        alert("Vous avez gagné");
       }
     }
   }
@@ -187,7 +183,7 @@ function createBomb(playerTop, playerLeft) {
   bomb.style.left = `${playerLeft}px`;
   //on ajoute la div dans notre plateau de jeu
   gameBoard.appendChild(bomb);
-  
+
   //au bout de 3s
   setTimeout(function () {
     //on enlève la bombe du plateau de jeu
@@ -229,10 +225,8 @@ function move(element, direction) {
         element.style.left = `${left}px`;
       }
       break;
-
-    default :detectDegats(player);
-      break;
   }
+  detectDegats()
 }
 
 //On écoute si l'utilisateur appuie sur des touches de son clavier
@@ -245,7 +239,7 @@ document.addEventListener("keydown", (e) => {
       move(player, "left");
       break;
     case "ArrowUp":
-      move(player, "top");  
+      move(player, "top");
       break;
     case "ArrowDown":
       move(player, "bottom")
@@ -258,17 +252,18 @@ document.addEventListener("keydown", (e) => {
     default:
       break;
   }
+
 });
 
 //faire bouger nos ennemies de manière aléatoire toutes les secondes
 setInterval(function () {
-    //on parcourt le tableau d'ennemis
-    ennemies.forEach(
-        //pour chaque ennemi du tableau d'ennemis
-        ennemie => {
-        //on choisit une direction aléatoire
-        let random = Math.floor(Math.random() * 4);
-        //on fait bouger l'ennemi dans la direction choisi
-        move(ennemie, directions[random]);
+  //on parcourt le tableau d'ennemis
+  ennemies.forEach(
+    //pour chaque ennemi du tableau d'ennemis
+    ennemie => {
+      //on choisit une direction aléatoire
+      let random = Math.floor(Math.random() * 4);
+      //on fait bouger l'ennemi dans la direction choisi
+      move(ennemie, directions[random]);
     });
 }, 1000);
